@@ -1,10 +1,11 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import useAxiosSecure from '../../../hooks/useAxiosSecure'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import useAuth from '../../../hooks/useAuth';
 import LoadingSpinner from '../../../components/Shared/LoadingSpinner';
 import RoomDataRow from '../../../components/DashBoard/TableRow/RoomDataRow';
+import toast from 'react-hot-toast';
 
 const MyListings = () => {
 
@@ -12,13 +13,37 @@ const MyListings = () => {
     const axiosSecure = useAxiosSecure()
 
     const {data : rooms = [],isLoading , refetch} = useQuery({
-        queryKey:['my-listings',user?.email1],
+        queryKey:['my-listings',user?.email],
         queryFn: async() => {
           const {data} = await axiosSecure.get(`/my-listings/${user?.email}`)
           // setRooms(data)
           return data
         }
       })
+      
+      const {mutateAsync} = useMutation({
+        mutationFn: async id => {
+          const {data} = await axiosSecure.delete(`room/${id}`)
+          return data
+        },
+        onSuccess:data => {
+          console.log(data);
+          toast.success('Room Deleted Successful')
+          refetch()
+          
+        }
+      })
+
+      const handleDelete = async id => {
+        
+        try{
+          await mutateAsync(id)
+        }
+        catch (err){
+          console.log(err);
+        }
+      
+      }
 
       if (loading || isLoading) return <LoadingSpinner />
     return (
@@ -80,7 +105,7 @@ const MyListings = () => {
                   </thead>
                   <tbody>{/* Room row data */}
                   {
-                    rooms && rooms.map(room => <RoomDataRow key={room._id} room={room} refetch={refetch} />)
+                    rooms && rooms.map(room => <RoomDataRow handleDelete={handleDelete} key={room._id} room={room} refetch={refetch} />)
                   }
                   </tbody>
                 </table>

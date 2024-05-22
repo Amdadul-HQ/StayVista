@@ -75,7 +75,7 @@ const AddRoom = () => {
                 to,
                 from,
                 host,
-                roomImage_url,
+                image:roomImage_url,
             }
             
             await mutateAsync(roomData)
