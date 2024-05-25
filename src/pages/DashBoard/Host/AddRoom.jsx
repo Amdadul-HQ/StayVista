@@ -88,7 +88,6 @@ const AddRoom = () => {
 
     return (
         <div>
-            <h1>Add room </h1>
             <AddRoomForm
             dates={dates}
             handleDates={handleDates}

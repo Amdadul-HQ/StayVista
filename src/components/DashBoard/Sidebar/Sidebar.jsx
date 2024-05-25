@@ -6,15 +6,25 @@ import { MdHomeWork } from "react-icons/md";
 import { Link, NavLink } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
 import { useState } from "react";
+import useRole from "../../../hooks/useRole";
+import HosMenu from "./Menu/HosMenu";
+import GuestMenu from "./Menu/GuestMenu";
+import AdminMenu from "./Menu/AdminMenu";
 
 const Sidebar = () => {
-    const { logOut } = useAuth()
-    const [isActive, setActive] = useState(false)
-  
-    // Sidebar Responsive Handler
-    const handleToggle = () => {
-      setActive(!isActive)
-    }
+  const { logOut } = useAuth()
+  const [isActive, setActive] = useState(false)
+  const [toggle, setToggle] = useState(true)
+  const [role, isLoading] = useRole()
+  console.log(role, isLoading)
+  // Sidebar Responsive Handler
+  const handleToggle = () => {
+    setActive(!isActive)
+  }
+
+  const toggleHandler = event => {
+    setToggle(event.target.checked)
+  }
     return (
         <>
         {/* Small Screen Navbar */}
@@ -83,7 +93,10 @@ const Sidebar = () => {
                 </NavLink>
   
                 {/* Add Room */}
-                <NavLink
+                {role === 'guest' && <GuestMenu/>}
+                {role === 'host' && <HosMenu/>}
+                {role === 'admin' && <AdminMenu/>}
+                {/* <NavLink
                   to='add-room'
                   className={({ isActive }) =>
                     `flex items-center px-4 py-2 my-5  transition-colors duration-300 transform  hover:bg-gray-300   hover:text-gray-700 ${
@@ -96,7 +109,7 @@ const Sidebar = () => {
                   <span className='mx-4 font-medium'>Add Room</span>
                 </NavLink>
                 {/* My Listing */}
-                <NavLink
+                {/* <NavLink
                   to='my-listings'
                   className={({ isActive }) =>
                     `flex items-center px-4 py-2 my-5  transition-colors duration-300 transform  hover:bg-gray-300   hover:text-gray-700 ${
@@ -107,7 +120,7 @@ const Sidebar = () => {
                   <MdHomeWork className='w-5 h-5' />
   
                   <span className='mx-4 font-medium'>My Listings</span>
-                </NavLink>
+                </NavLink>  */}
               </nav>
             </div>
           </div>
