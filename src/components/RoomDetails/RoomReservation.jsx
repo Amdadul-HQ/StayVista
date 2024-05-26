@@ -3,15 +3,23 @@ import Button from '../Shared/Button/Button'
 import { useState } from 'react';
 import { DateRange } from 'react-date-range';
 import { differenceInCalendarDays } from 'date-fns';
+import useAuth from '../../hooks/useAuth';
+import BookingModal from '../Categories/Model/BookingModal';
 
 const RoomReservation = ({ room }) => {
+  const { user } = useAuth()
+  const [isOpen, setIsOpen] = useState(false)
   const [state, setState] = useState([
     {
       startDate: new Date(room.from),
       endDate: new Date(room.to),
-      key: 'selection'
-    }
-  ]);
+      key: 'selection',
+    },
+  ])
+
+  const closeModal = () => {
+    setIsOpen(false)
+  }
   const totalPrice = parseInt(
     differenceInCalendarDays(new Date(room.to),new Date(room.from)) 
   ) * room?.price;
@@ -39,8 +47,17 @@ const RoomReservation = ({ room }) => {
       </div>
       <hr />
       <div className='p-4'>
-        <Button label={'Reserve'} />
+        <Button  onClick={() => setIsOpen(true)} label={'Reserve'} />
       </div>
+      <BookingModal
+        isOpen={isOpen}
+        closeModal={closeModal}
+        bookingInfo={{
+          ...room,
+          price: totalPrice,
+          guest: { name: user?.displayName },
+        }}
+      />
       <hr />
       <div className='p-4 flex items-center justify-between font-semibold text-lg'>
         <div>Total</div>
